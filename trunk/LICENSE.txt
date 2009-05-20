@@ -1,0 +1,1 @@
+pytap is licensed under the LGPL: http://www.gnu.org/licenses/lgpl.html
