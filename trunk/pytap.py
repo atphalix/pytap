@@ -24,7 +24,7 @@ def generatePho(text):
 
 def synthesizePho(file, voice, output_file, pitch, speed):
     """Generate sound from phoneme file with voice"""
-    cmd = """cat "%s" | mbrola/mbrola-linux-i386 -f %f -t %f mbrola/%s/%s - %s""" % (file, pitch, speed, voice, voice, output_file)
+    cmd = """cat "%s" | mbrola/mbrola-linux-i386 -e -f %f -t %f mbrola/%s/%s - %s""" % (file, pitch, speed, voice, voice, output_file)
     os.system(cmd)
   
 
@@ -54,8 +54,8 @@ def main():
     parser.add_option('-o', '--output', dest='output', default='sound.wav', help='Specify output file for sound')
     parser.add_option('-v', '--voice', dest='voice', default='pl1', help='Choose voice')
     parser.add_option('-l', '--language', dest='language', default='eo', help='Choose language')
-    parser.add_option('--pitch', dest='pitch', default=1.0, help='Ratio appliced to pitch of voice (default 1.0)')
-    parser.add_option('--speed', dest='speed', default=1.0, help='Ratio appliced to speed of voice (default 1.0)')
+    parser.add_option('--pitch', dest='pitch', default=1.0, help='Ratio applied to pitch of voice (default 1.0)')
+    parser.add_option('--speed', dest='speed', default=1.0, help='Ratio applied to speed of voice (default 1.0)')
     parser.add_option('--play', dest='play', action='store_true', default=False, help='Play sound that was rendered')
     parser.add_option('--voices', dest='voices', action='store_true', default=False, help='Display a list of all available voices')
     parser.add_option('--languages', dest='languages', action='store_true', default=False, help='Display a list of all available languages')
