@@ -4,10 +4,6 @@ class Separator:
     def __init__(self, value, type):
         self._value = value
         self._type = type
-    def getValue(self):
-        return self._value
-    def getType(self):
-        return self._type
 
     def __repr__(self):
         type = "?"
@@ -17,5 +13,12 @@ class Separator:
             type="ps"
         return "<separator type='%s'>" % (type) + str(self._value) + \
                 "</separator>"
+
     def __str__(self):
         return self.__repr__()
+
+    def getValue(self):
+        return self._value
+
+    def getType(self):
+        return self._type
