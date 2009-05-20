@@ -1,12 +1,7 @@
 class Phrase:
+    """Values are list of words, separators"""
     def __init__(self, items):
-        """
-        Values are list of words, separators
-        """
         self._items = items
-    def getItems(self):
-        return self._items
-        
 
     def __repr__(self):
         import types
@@ -23,5 +18,9 @@ class Phrase:
             s+="</item>"
         s+="</phrase>"
         return s
+
     def __str__(self):
         return self.__repr__()
+
+    def getItems(self):
+        return self._items

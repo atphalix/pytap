@@ -1,8 +1,8 @@
 import math
 
-WORD_SEPARATOR=1
-PHRASE_SEPARATOR=2
-WORD=10
+WORD_SEPARATOR = 1
+PHRASE_SEPARATOR = 2
+WORD = 10
 
 # Voice definition : 
 # Time are in mSec
@@ -21,16 +21,16 @@ FREQ_ACCENT = 32
 FREQ_END_OF_PHRASE = 33
 FREQ_START = 34
 FREQ_END_OF_WORD=35
-F_NORMAL=40
-F_QUESTION=41
-F_EXCLAMATION=42
-F_SUBPHRASE=43  #xxxxx,
+F_NORMAL = 40
+F_QUESTION = 41
+F_EXCLAMATION = 42
+F_SUBPHRASE = 43  #xxxxx,
 
 #((normal time, accent time, last sound time, link time, start time),
 # (normal freq, expressive freq, accent freq, end-of-phrase freq, start freq))
 #voice1 = ((100, 180, 200, 1, 80), (180, 330, 200, 126, 150, 170))
 #voice1 = ((100, 180, 200, 1, 80), (200, 220, 200, 126, 170, 170))
-voice1 = {
+voice = {
         TIME_NORMAL:100,
         TIME_ACCENT:180,
         TIME_LAST_SOUND:200,
@@ -48,7 +48,6 @@ voice1 = {
         F_QUESTION:lambda x:((x*2-0.8)**2)/8.0+7.0/8.5,
         F_EXCLAMATION:lambda x:((x*2-1.2)**2)/8.0+7.0/8.0 + math.cos(x*3.0)-math.cos(x*3.9),
         F_SUBPHRASE:lambda x:math.sin(x+0.95),
-
 }
 
 # TODO : replace freq by +10, -10, ... from normal freq
