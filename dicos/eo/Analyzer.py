@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from Constants import *
 from TextExpander import TextExpander
 
@@ -11,16 +10,15 @@ class Analyzer:
     def __init__(self, datasFactory):
         self._datasFactory = datasFactory
         self._dicSounds = {
-                "cx":"tS", "gx":"dZ", "h":"x", "jx":"Z", 
-                "sx":"S", "ux":"w", 
+                "cx":"tS", "gx":"dZ", "hx":"x", "jx":"Z", "sx":"S", "ux":"w", 
+                "c":"ts",
                 " ":"_", ".":"_", ",":"_", "-":"_", "(":"_", ")":"_",
                 "\r":"_", "\n":"_",
-                "c":"ts"
             }
         self._facSoundsMultiply = {'x':2}
         self._lstWordSeparators = [
                 "(", ")", "'", "\"", "[", "]", "{", "}",  
-                "+", "@", "*", "#", "%", "&", "/", "=", "$", "�", "-", " "]
+                "+", "@", "*", "#", "%", "&", "/", "=", "$", "£", "-", " "]
         self._lstPhraseSeparators = [",", ".", ";", "!", "?"]
 
 
@@ -37,15 +35,18 @@ class Analyzer:
 
         # Create characters
         chars = self._createCharacters(text)
-
+        print chars
         # Create words and separators
         items = self._createWordsAndSeparators(chars)
+        print items
 
         # Create phrases
         phrases = self._createPhrases(items)
+        print phrases
 
         # Add syllabs
-        phrases = self._addSyllabsToPhrases(phrases)
+        # XXX does nothing?
+        #phrases = self._addSyllabsToPhrases(phrases)
 
         # Create pho
         pho = self._createPho(phrases)
@@ -64,10 +65,6 @@ class Analyzer:
     #>------------------------------------------------------------------------
 
     def _createPhoForPhrase(self, phrase):
-        import types
-        #print "======================================================="
-        #print phrase
-
         items = phrase.getItems()
         lstPHO=[]
         type="."
@@ -75,34 +72,21 @@ class Analyzer:
             item = items[noItem]
             if item.getType()==WORD:
                 characters = item.getLstCharacters()
-                voyelles = [i  for i in range(len(characters))
-                               if characters[i].getValue() 
-                               in ['a', 'e', 'i', 'o', 'u']]
+                vowels = [i for i in range(len(characters)) if characters[i].getValue() in ['a', 'e', 'i', 'o', 'u']]
 
-                for i in range(len(characters)):
-                    character = characters[i]
+                for i, character in enumerate(characters):
                     c = character.getValue()
-                    if self._dicSounds.has_key(c):
-                        c = self._dicSounds[c]
-                    if i==0:  # First
+                    # replace with phoneme
+                    c = self._dicSounds.get(c, c)
+
+                    if i==0:  # first character
                         lstPHO.append((c, voice[TIME_START], 0, voice[FREQ_START]))
-                    #elif i==len(characters)-5:
-                        # Hack to get last last syllab; to improve
-                        #lstPHO.append((c, voice[0][0], 50, voice[1][0]))
-                    elif len(voyelles)>=2 and i==voyelles[-2]-1: # before accent
-                        # Hack to get last syllab; to improve
-                        lstPHO.append((c, voice[TIME_NORMAL], 0, 0))
-						# FREQ_NORMAL todo
-                    elif len(voyelles)>=2 and i==voyelles[-2]: # accent
-                        # Hack to get last syllab; to improve
+                    elif len(vowels)>=2 and i==vowels[-2]: # accent
                         lstPHO.append((c, voice[TIME_ACCENT], 50, voice[FREQ_ACCENT]))
-                    #elif i==2 and len(voyelles)>2:
-                        #lstPHO.append((c, voice[0][4], 100, voice[1][0]))
-                    #elif i==len(characters)-1:
-                        #lstPHO.append((c, voice[0][2], 50, voice[1][5]))
-                    else:
-                        lstPHO.append((c, voice[TIME_NORMAL]))
-                    #fin de phrase plus longue !
+                    elif i==len(characters)-1: # end of word
+                        lstPHO.append((c, voice[TIME_LAST_SOUND], 0, voice[FREQ_END_OF_WORD]))
+                    else: # normal character
+                        lstPHO.append((c, voice[TIME_NORMAL], 0, 0))
 
 
             elif item.getType()==WORD_SEPARATOR:
@@ -126,7 +110,7 @@ class Analyzer:
                 else:
                     lstPHO.append(("_", 300, 0, 0))
             else:
-                print "Unsuppored item type : ", item.getType()
+                print "Unsupported item type : ", item.getType()
 
 
         # Fac sounds multiply
@@ -168,24 +152,24 @@ class Analyzer:
 
     #>------------------------------------------------------------------------
 
-    def _createCharacters(self, text):
+    def _createCharacters(self, orig_text):
         """
         Create list of characters from plain text.
         @return list of characters
         """
-        txt = text[:]
+        text = orig_text.replace('ĉ', 'cx').replace('ŝ', 'sx').replace('ĥ', 'hx').replace('ĝ', 'gx').replace('ŭ', 'ux').replace('ĵ', 'jx')
         lstCharacters = []
-        while txt!="":
+        while text!="":
             # Get next character
-            c = txt[0]
-            txt = txt[1:]
+            c = text[0]
+            text = text[1:]
 
             # Expand x notation
-            if len(txt)>0:
-                c2 = txt[0]
+            if len(text) > 0:
+                c2 = text[0]
                 if c2 == "x" and c in ["c", "s", "g", "j", "u"]:
-                    txt = txt[1:]
-                    c = c + c2
+                    text = text[1:]
+                    c += c2
 
             # Append character
             lstCharacters.append(self._datasFactory.newCharacter(c))
@@ -199,6 +183,7 @@ class Analyzer:
         Create a list of words and separators objects
         @return [(word | separator)*]
         """
+        # XXX combine with phrases
         items = []
         word=[]
         for character in characters:
@@ -212,8 +197,7 @@ class Analyzer:
                     word=[]
 
                 # Add a new word separator
-                items.append(self._datasFactory.newSeparator(character, 
-                        WORD_SEPARATOR))
+                items.append(self._datasFactory.newSeparator(character, WORD_SEPARATOR))
             elif cv in self._lstPhraseSeparators:
                 # Flush word (add word to items list)
                 if len(word)>0: 
@@ -221,8 +205,7 @@ class Analyzer:
                     word=[]
 
                 # Add a new phrase separator
-                items.append(self._datasFactory.newSeparator(character, 
-                        PHRASE_SEPARATOR))
+                items.append(self._datasFactory.newSeparator(character, PHRASE_SEPARATOR))
             else:
                 # Add character to word
                 word.append(character)
@@ -271,7 +254,6 @@ class Analyzer:
     #>------------------------------------------------------------------------
 
     def _addSyllabsToPhrases(self, phrases):
-        import types
         for phrase in phrases:
             for item in phrase.getItems():
                 if (item.getType()==WORD):
@@ -282,6 +264,4 @@ class Analyzer:
                 else:
                     print "non-word: ", item
         return phrases
-
-
 

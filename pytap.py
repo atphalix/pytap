@@ -25,6 +25,7 @@ def generatePho(text):
 def synthesizePho(file, voice, output_file, pitch, speed):
     """Generate sound from phoneme file with voice"""
     cmd = """cat "%s" | mbrola/mbrola-linux-i386 -e -f %f -t %f mbrola/%s/%s - %s""" % (file, pitch, speed, voice, voice, output_file)
+    print cmd
     os.system(cmd)
   
 

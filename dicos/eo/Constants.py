@@ -38,7 +38,7 @@ voice = {
         TIME_START:80,
         FREQ_NORMAL:200,
         FREQ_EXPRESSIVE:20,
-        FREQ_ACCENT:10,
+        FREQ_ACCENT:40,
         FREQ_END_OF_PHRASE:-50,  #-74
         FREQ_START:-30,
         FREQ_END_OF_WORD:-30,
