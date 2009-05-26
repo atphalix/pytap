@@ -68,7 +68,10 @@ def main():
         print '\n'.join(availableLanguages())
     else:    
         # synthesize voice
-        if options.text:
+        if not sys.stdin.isatty():
+            # input is being piped
+            options.phoneme = generatePho(sys.stdin.read())
+        elif options.text:
             options.phoneme = generatePho(options.text)
         elif options.file:
             text = open(options.file).read()

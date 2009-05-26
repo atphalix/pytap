@@ -10,7 +10,7 @@ class Analyzer:
     def __init__(self, datasFactory):
         self._datasFactory = datasFactory
         self._dicSounds = {
-                "cx":"tS", "gx":"dZ", "hx":"x", "jx":"Z", "sx":"S", "ux":"w", 
+                "cx":"tS", "gx":"dZ", "h":"x", "jx":"Z", "sx":"S", "ux":"w", 
                 "c":"ts",
                 " ":"_", ".":"_", ",":"_", "-":"_", "(":"_", ")":"_",
                 "\r":"_", "\n":"_",
